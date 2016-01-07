@@ -22,6 +22,24 @@ class PlayPublishTask extends DefaultTask {
     AndroidPublisher.Edits edits
 
     def publish() {
+
+        def signingConfigName = variant.signingConfig.name;
+        def propertiesFileName = "${signingConfigName}.play.properties"
+
+        def propFile = new File(propertiesFileName.toString());
+
+        if (propFile.exists()) {
+            def properties = new Properties()
+            properties.load(new FileInputStream(propFile))
+            extension.serviceAccountEmail = properties['serviceAccountEmail'] ?: extension.serviceAccountEmail
+            extension.pk12File = TaskHelper.getFileOrNull(properties['pk12File']) ?: extension.pk12File
+            extension.jsonFile = TaskHelper.getFileOrNull(properties['jsonFile']) ?: extension.jsonFile
+            extension.autoIncrementVersion =  properties['autoIncrementVersion'] ? new Boolean( properties['autoIncrementVersion']): extension.autoIncrementVersion
+            extension.track =  properties['track'] ?: extension.track
+            extension.userFraction =  properties['userFraction'] ? new Double(properties['userFraction']) : extension.userFraction
+        }
+
+
         if (service == null) {
             service = AndroidPublisherHelper.init(extension)
         }

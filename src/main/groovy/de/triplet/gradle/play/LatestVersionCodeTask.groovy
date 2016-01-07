@@ -6,7 +6,9 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.services.androidpublisher.AndroidPublisher
 import com.google.api.services.androidpublisher.model.AppEdit
 import org.gradle.api.DefaultTask
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskExecutionException
 
 class LatestVersionCodeTask extends PlayPublishTask {
 
@@ -24,11 +26,10 @@ class LatestVersionCodeTask extends PlayPublishTask {
             //delete latest edit
             edits.delete(variant.applicationId, editId).execute()
 
-            variant.mergedFlavor.versionCode =  apk.versionCode + 1
-
+            variant.mergedFlavor.versionCode =  apk.versionCode + 1;
         } catch (Exception ex){
-            logger.debug("exception ignored", ex)
+            throw new TaskExecutionException(this, ex)
         }
-        logger.debug("Version set to " + variant.mergedFlavor.versionCode)
+        logger.warn("Version set to " + variant.mergedFlavor.versionCode)
     }
 }

@@ -89,6 +89,21 @@ class PlayPublisherPlugin implements Plugin<Project> {
             // Attach tasks to task graph.
             publishListingTask.dependsOn playResourcesTask
 
+            if (extension.autoIncrementVersion) {
+                log.warn("Adding autoIncrementVersion task for ${variationName}")
+                def updatePlayVersionTask = project.tasks.create(updatePlayVersionName, LatestVersionCodeTask)
+                updatePlayVersionTask.description = "Gets the latest version code from play store for ${variationName} build and sets the next one"
+                updatePlayVersionTask.group = PLAY_STORE_GROUP
+                updatePlayVersionTask.extension = extension
+                updatePlayVersionTask.variant = variant
+
+                variant.preBuild.doLast {
+                    updatePlayVersionTask.updateVersion()
+                }
+            } else {
+                log.warn("Failed adding autoIncrementVersion task for ${variationName}")
+            }
+
             if (zipAlignTask && variantData.zipAlignEnabled) {
                 // Create and configure publisher apk task for this variant.
                 def publishApkTask = project.tasks.create(publishApkTaskName, PlayPublishApkTask)

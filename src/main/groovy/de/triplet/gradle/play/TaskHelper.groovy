@@ -5,6 +5,8 @@ import com.google.api.client.http.FileContent
 
 class TaskHelper {
 
+    def static USER_HOME_PLACEHOLDER = "\${user.home}"
+
     def static readAndTrimFile(File file, int maxCharLength, boolean errorOnSizeLimit) {
         if (file.exists()) {
             def message = file.text
@@ -39,6 +41,16 @@ class TaskHelper {
                 File graphicFile = files[0]
                 return new FileContent(AndroidPublisherHelper.MIME_TYPE_IMAGE, graphicFile);
             }
+        }
+        return null
+    }
+
+    static def getFileOrNull(String path) {
+        if (path != null) {
+            if (path.contains(USER_HOME_PLACEHOLDER)){
+                path = path.replace(USER_HOME_PLACEHOLDER,  System.getProperty("user.home"))
+            }
+            return new File(path)
         }
         return null
     }

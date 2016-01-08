@@ -26,7 +26,7 @@ class LatestVersionCodeTask extends PlayPublishTask {
 
             variant.mergedFlavor.versionCode =  apk.versionCode + 1
 
-        } catch (IllegalArgumentException|GoogleJsonResponseException ex){
+        } catch (Exception ex){
             logger.debug("exception ignored", ex)
         }
         logger.debug("Version set to " + variant.mergedFlavor.versionCode)
